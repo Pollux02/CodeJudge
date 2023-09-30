@@ -1,24 +1,38 @@
 # CodeHunter
 
-Juez creado para que un profesor sea capaz de hacer una revisión de códigos automática.
+Juez creado para hacer una revisión de códigos automática.
 
 ## Tabla de Contenidos
 
-- [Manual de usuario](#manual)
+- [Manual](#manual)
 - [Demostración](#demostración)
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 
 ## Manual
-sssss
-
-## Demostración
-
 **Algunas funciones del programa se hicieron pensadas para la forma en que trabaja el profesor.**
 
-Este programa está pensado para trabajar con una carpeta con archivos .zip con un nombre con el formato similar a lo que se presenta.
+**Versión 1.0:**
 
-![image](https://github.com/Pollux02/CodeJudge/assets/62532201/b8b2b19f-ba70-4d72-9aef-f07d1d5ad25e)
+CodeHunter está pensado para trabajar con una carpeta con archivos .zip con un nombre con el formato similar a lo que se presenta (Figura 1).
+
+![Formato de entrega de códigos.](https://github.com/Pollux02/CodeJudge/assets/62532201/b8b2b19f-ba70-4d72-9aef-f07d1d5ad25e)
+Figura 1: Formato de entrega de códigos.
+
+j1: Id del entregable (2 caracteres).
+
+pro1: Asignatura para la que se entrega el código (4 caracteres).
+
+023b: Calendario en el que se entrega el código. En este caso es en el segundo semestre de 2023, por ende es 2023b (4 caracteres).
+
+Lo demás será el nick
+## Demostración
+
+
+
+
+
+
 
 Se ingresa al **CodeJudge** la ruta de la carpeta con todos los archivos zip de los alumnos. Al presionar el botón "Seleccionar
 carpeta" se extraerán todos los archivos zip y se buscará la carpeta "C" en el interior de cada carpeta de alumno.
