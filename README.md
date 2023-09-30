@@ -4,12 +4,13 @@ Juez creado para que un profesor sea capaz de hacer una revisión de códigos au
 
 ## Tabla de Contenidos
 
+- [Manual de usuario](#manual)
 - [Demostración](#demostración)
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
-- [Uso](#uso)
-- [Contribución](#contribución)
-- [Licencia](#licencia)
+
+## Manual
+sssss
 
 ## Demostración
 
