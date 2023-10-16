@@ -2,20 +2,26 @@ public class CodigoAlumno
 {
 	private String nickName;
 	private String rutaCodigo;
-	private float calificacion;
+	private int calificacion;
+	private String faltas;
+	private int numVersiones;
 	
 	public CodigoAlumno() 
     {
         this.nickName = "";
         this.rutaCodigo = "";
         this.calificacion = 0;
+        this.faltas = "";
+        this.numVersiones = 0;
     }
 	
-	public CodigoAlumno(String nickName, String rutaCodigo, float calificacion) 
+	public CodigoAlumno(String nickName, String rutaCodigo, int calificacion, String faltas) 
     {
         this.nickName = nickName;
         this.rutaCodigo = rutaCodigo;
         this.calificacion = calificacion;
+        this.faltas = faltas;
+        this.numVersiones = 0;
     }
 	
 	public String getNickName()
@@ -38,13 +44,33 @@ public class CodigoAlumno
 		this.rutaCodigo = rutaCodigo;
 	}
 	
-	public float getCalificacion()
+	public int getCalificacion()
 	{
 		return calificacion;
 	}
 	
-	public void setCalificacion(float calificacion)
+	public void setCalificacion(int calificacion)
 	{
 		this.calificacion = calificacion;
+	}
+	
+	public String getFaltas()
+	{
+		return faltas;
+	}
+	
+	public void setFaltas(String faltas)
+	{
+		this.faltas = faltas;
+	}
+	
+	public int getNumVersiones()
+	{
+		return numVersiones;
+	}
+	
+	public void setNumVersiones(int numVersiones)
+	{
+		this.numVersiones = numVersiones;
 	}
 }
