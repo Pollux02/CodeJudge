@@ -135,11 +135,12 @@ class VentanaPrin extends Frame
             for(i = 0; i<prueba.getEntradas().size(); i++)
             {
             	writer.write(prueba.getEntradas().get(i)+"\n");
+            	writer.flush();
             }
-            writer.flush();
-
+            
             // Leer y mostrar la salida del programa en C
-            while ((linea = reader.readLine()) != null) {
+            while ((linea = reader.readLine()) != null) 
+            {
                 salida = salida + linea +"\n";
             }
 
