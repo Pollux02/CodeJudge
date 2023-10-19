@@ -155,7 +155,49 @@ Al elegir el archivo de pruebas **CodeHunter** comenzará con la evaluación aut
 
 ![Resultados finales](https://github.com/Pollux02/CodeHunter/assets/62532201/8177f54b-b291-411a-b737-f26d48526042) *Figura 2.5: Resultados finales.*
 
-Podemos ver que en la revisión de "TresCinco" podemos ver que se le asignó una calificación de 5/100 ya que no se encontró "main.c".
+Podemos ver que en la revisión de "TresCinco" podemos ver que se le asignó una calificación de 5/100 ya que no se encontró "main.c". Al revisar su carpeta "C", por algún error del alumno, se guardo el código fuente con el nombre "main.c.c".
+
+![Carpeta de "TresCinco"](https://github.com/Pollux02/CodeHunter/assets/62532201/043ed031-3562-4695-ba77-ad31426bc975) *Figura 2.6: Carpeta de "TresCinco".*
+
+Al parecer "CuatroCero" no cumple con lo requerido para el programa. Si revisamos su código podemos ver que no solicita ningún dato al usuario y el cálculo lo hace con valores hardcodeados, pero en el archivo de pruebas se solicitan entradas para el programa.
+
+Archivo de pruebas:
+
+2
+
+2
+
+\=
+
+2
+
+\*
+
+4
+
+4
+
+\=
+
+8
+
+\*
+
+7
+
+2
+
+\=
+
+7
+
+\*
+
+Cómo se puede ver en las pruebas hay entradas, pero en el código de "CuatroCero" no se permiten entradas.
+
+![Código de "CuatroCero"](https://github.com/Pollux02/CodeHunter/assets/62532201/3b80b985-e201-4af1-92b8-42dee0959cb0) *Figura 2.7: Código de "CuatroCero".*
+
+
 
 ## Requisitos
 
