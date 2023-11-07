@@ -1,19 +1,26 @@
-import java.awt.Frame;
-import java.awt.Button;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JTextArea;
+import javax.swing.JPanel;
+import javax.swing.JFileChooser;
+import javax.swing.JScrollPane;
+
+import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.TextField;
-import java.awt.TextArea;
-import java.awt.Panel;
-import java.awt.FileDialog;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -24,51 +31,72 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 
+
 public class VentanaPrincipal
 {
 	public static void main(String[] args) 
 	{		
 		VentanaPrin evaluacionCodigo = new VentanaPrin();
+		evaluacionCodigo.setLocationRelativeTo(null);
 		evaluacionCodigo.setVisible(true);
 	}
 }
 
-class VentanaPrin extends Frame
+class VentanaPrin extends JFrame
 {
 	public static final long serialVersionUID = 1;
 	private final int PIXELES_ANCHO = 720, PIXELES_ALTO = 480;
 	private final int CALIFICACION_MINIMA = 5, CALIFICACION_MAXIMA = 100, CALIFICACION_WARNINGS = 95, PORCENTAJE_MAXIMO = 100;
-	private Button seleccionarCarpeta, seleccionarArchivoPruebas;
-	private Panel panelButtons;
-	private TextField campoRutaCarpeta;
-	private TextArea tablaAlumnos;
-	private Label muestraProgreso;
+	private JButton seleccionarCarpeta, seleccionarArchivoPruebas;
+	private JPanel panelButtons, panelCheckboxs;
+	private JTextField campoRutaCarpeta;
+	private JTextArea tablaAlumnos;
+	private JLabel muestraProgreso;
+	private JCheckBox checkBoxC, checkBoxCPP;
+	private JScrollPane scrollPane;
 	private List<CodigoAlumno>codigosAlumnos = new ArrayList<>();
+	private static String lenguajeSolicitado = "";
 
 	public VentanaPrin()
 	{
 		super("CodeHunter");
 		ManejadorVentana mv = new ManejadorVentana();
-		panelButtons = new Panel(new GridLayout(9,1));
-		seleccionarCarpeta = new Button("Seleccionar carpeta");
-		seleccionarArchivoPruebas = new Button("Seleccionar archivo de pruebas");
-		campoRutaCarpeta = new TextField();
-		muestraProgreso = new Label("Progreso: 0%");
-		tablaAlumnos = new TextArea("Nickname\t|\tCalificación\t|\tFaltas");
 		
+		panelButtons = new JPanel(new GridLayout(9,1));
+		panelCheckboxs = new JPanel(new GridLayout(1,2));
+		
+		seleccionarCarpeta = new JButton("Seleccionar carpeta");
+		seleccionarArchivoPruebas = new JButton("Seleccionar archivo de pruebas");
+		
+		campoRutaCarpeta = new JTextField();
+		
+		muestraProgreso = new JLabel("Progreso: 0%");
+		
+		tablaAlumnos = new JTextArea("Nickname\t|\tCalificación\t|\tFaltas");
+		scrollPane = new JScrollPane(tablaAlumnos);
+		scrollPane.setPreferredSize(new Dimension(300, 150));
+		
+		checkBoxC = new JCheckBox("Lenguaje C");
+		checkBoxCPP = new JCheckBox("Lenguaje C++");
+
 		//PanelButtons
-		panelButtons.add(new Label("Ingrese ruta de carpeta: "));
+		panelButtons.add(new JLabel("Ingrese ruta de carpeta: "));
 		panelButtons.add(campoRutaCarpeta);
-		panelButtons.add(new Label(""));
+		panelButtons.add(new JLabel(""));
 		panelButtons.add(seleccionarCarpeta);
-		panelButtons.add(new Label(""));
+		panelButtons.add(new JLabel(""));
 		panelButtons.add(seleccionarArchivoPruebas);
-		panelButtons.add(new Label(""));
+		panelButtons.add(new JLabel(""));
 		panelButtons.add(muestraProgreso);
-		panelButtons.add(new Label(""));
+		panelButtons.add(new JLabel(""));
+		
+		panelCheckboxs.add(checkBoxC);
+		panelCheckboxs.add(checkBoxCPP);
+		
 		//Frame
-		add("Center",panelButtons);
-		add("South", tablaAlumnos);
+		add("North",panelButtons);
+		add("Center", panelCheckboxs);
+		add("South", scrollPane);
 		setSize(PIXELES_ANCHO,PIXELES_ALTO);
 		
 		addWindowListener(mv);
@@ -78,10 +106,22 @@ class VentanaPrin extends Frame
 	}
 	
 	//Función para compilar un archivo C por medio de la ruta del archivo.
-	private String compilarC(String rutaArchivo) 
+	private String compilar(String rutaArchivo) 
 	{
 	    // Comando de compilación para Linux
-	    String comandoCompilar = "gcc -Wall -Wextra -Wswitch-default -Wfloat-equal -Wunreachable-code " + rutaArchivo + " -o program";
+	    String comandoCompilar;
+	    
+	    switch(lenguajeSolicitado)
+	    {
+	    	case "C":
+	    		comandoCompilar = "gcc -Wall -Wextra -Wswitch-default -Wfloat-equal -Wunreachable-code " + rutaArchivo + " -o program";
+	    		break;
+	    	case "C++":
+	    		comandoCompilar = "g++ -Wall -Wextra -Wswitch-default -Wfloat-equal -Wunreachable-code " + rutaArchivo + " -o program";
+	    		break;	
+	    	default:
+	    		comandoCompilar = "";
+	    }
 	    
 	    try 
 	    {
@@ -95,66 +135,82 @@ class VentanaPrin extends Frame
 	        // Obtener el código de salida de compilación
 	        int compileExitCode = compileProcess.waitFor();
 
-	        if (compileExitCode == 0) {
+	        if (compileExitCode == 0) 
+	        {
 	            return "Compilación exitosa.\n\nWarnings:\n" + compileOutput;
-	        } else {
+	        } 
+	        else 
+	        {
 	            return "Error en la compilación:\n" + compileOutput;
 	        }
-	    } catch (IOException | InterruptedException e1) {
+	    } 
+	    catch (IOException | InterruptedException e1) 
+	    {
 	        e1.printStackTrace();
 	    }
 	    return "";
 	}
 	
 	//Función para ejecturar el programa usando las pruebas obtenidas.
-	private String ejecutarC(Prueba prueba)
+	private String ejecutarC(Prueba prueba) 
 	{
-		String linea;
-		String salida = "";
-		int i = 0;
-		
-		try 
-		{
-            // Crear un proceso para ejecutar el programa en C
-            ProcessBuilder processBuilder = new ProcessBuilder("./program");
-            processBuilder.redirectErrorStream(true); // Redirigir stderr a stdout
+	    // Utilizar un StringBuilder para acumular la salida
+	    StringBuilder salidaBuilder = new StringBuilder();
 
-            // Iniciar el proceso
-            Process procesoC = processBuilder.start();
+	    try 
+	    {
+	        ProcessBuilder processBuilder = new ProcessBuilder("./program");
+	        processBuilder.redirectErrorStream(true);
 
-            // Obtener el flujo de salida estándar del proceso (lo que el programa C imprimirá)
-            InputStream inputStream = procesoC.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+	        Process procesoC = processBuilder.start();
+	        InputStream inputStream = procesoC.getInputStream();
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+	        OutputStream outputStream = procesoC.getOutputStream();
+	        PrintWriter writer = new PrintWriter(outputStream);
 
-            // Obtener el flujo de entrada estándar del proceso (lo que el programa C espera para el scanf)
-            OutputStream outputStream = procesoC.getOutputStream();
-            PrintWriter writer = new PrintWriter(outputStream);
+	        Thread inputThread = new Thread(() -> {
+	            for (String entrada : prueba.getEntradas()) 
+	            {
+	                writer.write(entrada + "\n");
+	                writer.flush();
+	            }
+	            writer.close();
+	        });
 
-            // Escritura de las entradas
-            
-            for(i = 0; i<prueba.getEntradas().size(); i++)
-            {
-            	writer.write(prueba.getEntradas().get(i)+"\n");
-            	writer.flush();
-            }
-            
-            // Leer y mostrar la salida del programa en C
-            while ((linea = reader.readLine()) != null) 
-            {
-                salida = salida + linea +"\n";
-            }
+	        Thread outputThread = new Thread(() -> {
+	            try 
+	            {
+	                String linea;
+	                while ((linea = reader.readLine()) != null) 
+	                {
+	                    // Acumular la salida utilizando StringBuilder
+	                    salidaBuilder.append(linea).append("\n");
+	                }
+	                reader.close();
+	                System.out.println(salidaBuilder.toString());
+	            } 
+	            
+	            catch (IOException e) 
+	            {
+	                e.printStackTrace();
+	            }
+	        });
 
-            // Esperar a que el proceso en C termine
-            int exitCode = procesoC.waitFor();
-            System.out.println("El programa en C ha terminado con código de salida: " + exitCode);
-        } 
-		
-		catch (IOException | InterruptedException e) 
-		{
-            e.printStackTrace();
-        }
-		
-		return salida;
+	        inputThread.start();
+	        outputThread.start();
+
+	        inputThread.join();
+	        outputThread.join();
+
+	        int exitCode = procesoC.waitFor();
+	        System.out.println("El programa en C ha terminado con código de salida: " + exitCode);
+	    } 
+	    catch (IOException | InterruptedException e) 
+	    {
+	        e.printStackTrace();
+	    }
+
+	    return salidaBuilder.toString();
 	}
 	
 	private String capturarSalida(InputStream inputStream) throws IOException 
@@ -399,7 +455,7 @@ class VentanaPrin extends Frame
 	}
 	
 	//Función para la búsqueda de la carpeta "C".
-	private static String buscarCarpetaC(File directorio) 
+	private static String buscarCarpetaCodigo(File directorio) 
 	{
         // Se verifiva si el directorio existe.
         if (!directorio.exists()) 
@@ -418,15 +474,17 @@ class VentanaPrin extends Frame
                 if (archivo.isDirectory()) 
                 {	
                     //Si encontramos una carpeta con el nombre "C", retornamos su ruta.
-                    if (archivo.getName().equalsIgnoreCase("C")) 
+                    if (archivo.getName().equalsIgnoreCase(lenguajeSolicitado)) 
                     {
                         return archivo.getAbsolutePath();
                     } 
                     else 
                     {
                         //Si no es la carpeta que estamos buscando, recursivamente buscamos en esta carpeta.
-                        String rutaEncontrada = buscarCarpetaC(archivo);
-                        if (rutaEncontrada != null) {
+                        String rutaEncontrada = buscarCarpetaCodigo(archivo);
+                        
+                        if (rutaEncontrada != null) 
+                        {
                             return rutaEncontrada;
                         }
                     }
@@ -504,25 +562,25 @@ class VentanaPrin extends Frame
 	//Función que abre un FileDialog para seleccionar un archivo de pruebas.
 	public static String seleccionarArchivoPruebas() 
 	{
-        Frame frame = new Frame();
-        FileDialog fileDialog = new FileDialog(frame, "Seleccionar Archivo", FileDialog.LOAD);
+        JFrame frame = new JFrame();
+        JFileChooser fileChooser = new JFileChooser();
         
-        // Mostrar el cuadro de diálogo
-        fileDialog.setVisible(true);
-        
-        String archivoSeleccionado = fileDialog.getFile();
-        String directorioSeleccionado = fileDialog.getDirectory();
-        
-        if (archivoSeleccionado != null) {
-            try {
+        int result = fileChooser.showOpenDialog(frame);
+
+        if (result == JFileChooser.APPROVE_OPTION) 
+        {
+            try 
+            {
                 // Construir la ruta completa del archivo seleccionado
-                String rutaCompleta = directorioSeleccionado + archivoSeleccionado;
+                String rutaCompleta = fileChooser.getSelectedFile().getAbsolutePath();;
                 
                 // Leer el contenido del archivo en una variable
                 BufferedReader br = new BufferedReader(new FileReader(rutaCompleta));
                 StringBuilder contenido = new StringBuilder();
                 String linea;
-                while ((linea = br.readLine()) != null) {
+                
+                while ((linea = br.readLine()) != null) 
+                {
                     contenido.append(linea).append("\n");
                 }
                 br.close();
@@ -563,90 +621,112 @@ class VentanaPrin extends Frame
 					CodigoAlumno codigoAlumno = new CodigoAlumno();
 					String rutaCarpetaC = "";
 					
-					//Este ciclo recorre todos los archvos dentro de la carpetaCodigos.
-					for(i = 0; i<listaArchivos.length; i++)
+					codigosAlumnos.clear();
+					seleccionarArchivoPruebas.setVisible(false);
+					tablaAlumnos.setText("Nickname\t|\tCalificación\t|\tFaltas");
+
+					if(checkBoxC.isSelected())
 					{
-						nombreArchivo = listaArchivos[i].getName();
-						
-						porcentajeProgreso = (float)PORCENTAJE_MAXIMO /(float)listaArchivos.length * (float)(i+1);
-						
-						muestraProgreso.setText("Progreso: "+porcentajeProgreso+"%");
-						
-						//En la variable nombreArchivo se guarda el nombre del zip eliminando la extensión del mismo.
-						if (nombreArchivo.endsWith(".zip")) 
-						{
-							//Si el archivo termina con .zip, se comprueba si ya existe una carpeta con ese nombre.
-				            nombreArchivo = nombreArchivo.replace(".zip", "");
-				            
-				            File carpetaAlumno = new File(campoRutaCarpeta.getText()+"/"+nombreArchivo);
-				            
-				            if (System.getProperty("os.name").startsWith("Windows"))
-				    		{
-				            	carpetaAlumno = new File(campoRutaCarpeta.getText()+"\\"+nombreArchivo);
-				    		}
-							
-				            //Si no existe la carpeta se crea y se extrae el zip en la carpeta creada.
-							if(carpetaAlumno.exists() && carpetaAlumno.isDirectory())
-							{
-								System.out.println("La carpeta ya existe.");
-							}
-							else
-							{
-								//Se crea la carpeta con el nombre guardado en nombreArchivo.
-								crearCarpeta(nombreArchivo);
-								
-								//Se descomprime el zip con el nombre obtenido anteriormente en la carpeta que se creó.
-						        try 
-						        {
-						        	if (System.getProperty("os.name").startsWith("Windows"))
-						    		{
-						        		descomprimirZip(campoRutaCarpeta.getText()+"\\"+nombreArchivo+".zip", campoRutaCarpeta.getText()+"\\"+nombreArchivo);
-						    		}
-						        	else
-						        	{
-						        		descomprimirZip(campoRutaCarpeta.getText()+"/"+nombreArchivo+".zip", campoRutaCarpeta.getText()+"/"+nombreArchivo);
-						        	}
-								} 
-						        catch (IOException e1) 
-						        {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							}
-							
-							//Se busca la carpeta "C" dentro de la carpeta donde se descomprimió el .zip.
-							if (System.getProperty("os.name").startsWith("Windows"))
-				    		{
-								rutaCarpetaC = buscarCarpetaC(new File(campoRutaCarpeta.getText()+"\\"+nombreArchivo));
-				    		}
-							else
-							{
-								rutaCarpetaC = buscarCarpetaC(new File(campoRutaCarpeta.getText()+"/"+nombreArchivo));
-							}
-							
-							//Si rutaCarpetaC no está vacía significa que se encontró la carpeta "C".
-							if (rutaCarpetaC != null) 
-							{
-					            /*Se crea una instancia de la clase CodigoAlumno con su nickname el cual es el nombreArchivo pero se
-					            eliminan los primeros 10 caracteres, también se guarda la ruta de la carpeta C y se le asigna una 
-					            calificación de 100 (por el momento).*/
-					            codigoAlumno = new CodigoAlumno(nombreArchivo.substring(10), rutaCarpetaC, CALIFICACION_MAXIMA, "");
-					        } 
-							
-							else 
-							{
-					            /*Si no se encontró la carpeta, se crea una instancia de CodigoAlumno de la misma forma, sólo que 
-								ahora la ruta de la carpeta C queda vacía y la calificación es 0.*/
-					            codigoAlumno = new CodigoAlumno(nombreArchivo.substring(10), "", CALIFICACION_MINIMA, "Formato de entrega de evaluandos 4 (No se encontró la carpeta \"C\").\n");
-					        }
-							
-							//Se agrega la instancia creada a la lista de codigoAlumnos
-							codigosAlumnos.add(codigoAlumno);
-				        }
+						lenguajeSolicitado = "C";
 					}
 					
-					//Al terminar con todos los archivos, se hace visible el botón seleccionarArchivoPruebas.
-					seleccionarArchivoPruebas.setVisible(true);
+					if(checkBoxCPP.isSelected())
+					{
+						lenguajeSolicitado = "C++";
+					}
+					
+					if(lenguajeSolicitado == "")
+					{
+						JOptionPane.showMessageDialog(null, "No se seleccionó ningún lenguaje", "Aviso", JOptionPane.WARNING_MESSAGE);
+					}
+					else
+					{
+						//Este ciclo recorre todos los archvos dentro de la carpetaCodigos.
+						for(i = 0; i<listaArchivos.length; i++)
+						{
+							nombreArchivo = listaArchivos[i].getName();
+							
+							porcentajeProgreso = (float)PORCENTAJE_MAXIMO /(float)listaArchivos.length * (float)(i+1);
+							
+							muestraProgreso.setText("Progreso: "+porcentajeProgreso+"%");
+							
+							//En la variable nombreArchivo se guarda el nombre del zip eliminando la extensión del mismo.
+							if (nombreArchivo.endsWith(".zip")) 
+							{
+								//Si el archivo termina con .zip, se comprueba si ya existe una carpeta con ese nombre.
+					            nombreArchivo = nombreArchivo.replace(".zip", "");
+					            
+					            File carpetaAlumno = new File(campoRutaCarpeta.getText()+"/"+nombreArchivo);
+					            
+					            if (System.getProperty("os.name").startsWith("Windows"))
+					    		{
+					            	carpetaAlumno = new File(campoRutaCarpeta.getText()+"\\"+nombreArchivo);
+					    		}
+								
+					            //Si no existe la carpeta se crea y se extrae el zip en la carpeta creada.
+								if(carpetaAlumno.exists() && carpetaAlumno.isDirectory())
+								{
+									System.out.println("La carpeta ya existe.");
+								}
+								else
+								{
+									//Se crea la carpeta con el nombre guardado en nombreArchivo.
+									crearCarpeta(nombreArchivo);
+									
+									//Se descomprime el zip con el nombre obtenido anteriormente en la carpeta que se creó.
+							        try 
+							        {
+							        	if (System.getProperty("os.name").startsWith("Windows"))
+							    		{
+							        		descomprimirZip(campoRutaCarpeta.getText()+"\\"+nombreArchivo+".zip", campoRutaCarpeta.getText()+"\\"+nombreArchivo);
+							    		}
+							        	else
+							        	{
+							        		descomprimirZip(campoRutaCarpeta.getText()+"/"+nombreArchivo+".zip", campoRutaCarpeta.getText()+"/"+nombreArchivo);
+							        	}
+									} 
+							        catch (IOException e1) 
+							        {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								}
+								
+								//Se busca la carpeta "C" dentro de la carpeta donde se descomprimió el .zip.
+								if (System.getProperty("os.name").startsWith("Windows"))
+					    		{
+									rutaCarpetaC = buscarCarpetaCodigo(new File(campoRutaCarpeta.getText()+"\\"+nombreArchivo));
+					    		}
+								else
+								{
+									rutaCarpetaC = buscarCarpetaCodigo(new File(campoRutaCarpeta.getText()+"/"+nombreArchivo));
+								}
+								
+								//Si rutaCarpetaC no está vacía significa que se encontró la carpeta "C".
+								if (rutaCarpetaC != null) 
+								{
+						            /*Se crea una instancia de la clase CodigoAlumno con su nickname el cual es el nombreArchivo pero se
+						            eliminan los primeros 10 caracteres, también se guarda la ruta de la carpeta C y se le asigna una 
+						            calificación de 100 (por el momento).*/
+						            codigoAlumno = new CodigoAlumno(nombreArchivo.substring(10), rutaCarpetaC, CALIFICACION_MAXIMA, "");
+						        } 
+								
+								else 
+								{
+						            /*Si no se encontró la carpeta, se crea una instancia de CodigoAlumno de la misma forma, sólo que 
+									ahora la ruta de la carpeta C queda vacía y la calificación es 0.*/
+						            codigoAlumno = new CodigoAlumno(nombreArchivo.substring(10), "", CALIFICACION_MINIMA, "Formato de entrega de evaluandos 4 (No se encontró la carpeta \"" + lenguajeSolicitado + "\").\n");
+						        }
+								
+								//Se agrega la instancia creada a la lista de codigoAlumnos
+								codigosAlumnos.add(codigoAlumno);
+					        }
+						}
+						
+						//Al terminar con todos los archivos, se hace visible el botón seleccionarArchivoPruebas.
+						seleccionarArchivoPruebas.setVisible(true);
+					}
+					
 					break;
 					
 				case "Seleccionar archivo de pruebas":			
@@ -658,7 +738,7 @@ class VentanaPrin extends Frame
 					{
 						//Se dividen las lineas del archivo de pruebas, esto por medio del caracter "*".
 					    String[] lineas = textoArchivo.split("\\*");
-					    
+
 					    List<Prueba> pruebas = obtenerPruebas(lineas);
 					    
 					    //Se hace un recorrido por cada alumno
@@ -671,25 +751,64 @@ class VentanaPrin extends Frame
 					    	//Si el alumno tiene la carpeta "C"
 					    	if(codigosAlumnos.get(i).getRutaCodigo() != "")
 					    	{
-					    		File archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"/main.c");
-					    		
-					    		if (System.getProperty("os.name").startsWith("Windows"))
+					    		File archivoMain;
+					    		switch(lenguajeSolicitado)
 					    		{
-					    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"\\main.c");
+					    			case "C":
+							    		if (System.getProperty("os.name").startsWith("Windows"))
+							    		{
+							    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"\\main.c");
+							    		}
+							    		else
+							    		{
+							    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"/main.c");
+							    		}
+					    				break;
+					    			case "C++":
+							    		if (System.getProperty("os.name").startsWith("Windows"))
+							    		{
+							    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"\\main.cpp");
+							    		}
+							    		else
+							    		{
+							    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"/main.cpp");
+							    		}
+					    				break;
+					    			default:
+					    				archivoMain = null;
 					    		}
 					    		
 					    		//Se verifica si existe un archivo llamado "main.c"
 					    		if(archivoMain.exists())
 					    		{
-					    			//Se trata de compilar el archivo "main.c" y su salida se guarda en "compilacion".
-					    			if (System.getProperty("os.name").startsWith("Windows"))
-						    		{
-					    				compilacion = compilarC(codigosAlumnos.get(i).getRutaCodigo()+"\\main.c");
-						    		}
-					    			else
+					    			switch(lenguajeSolicitado)
 					    			{
-					    				compilacion = compilarC(codigosAlumnos.get(i).getRutaCodigo()+"/main.c");
+					    				case "C":
+					    					//Se trata de compilar el archivo "main.c" y su salida se guarda en "compilacion".
+							    			if (System.getProperty("os.name").startsWith("Windows"))
+								    		{
+							    				compilacion = compilar(codigosAlumnos.get(i).getRutaCodigo()+"\\main.c");
+								    		}
+							    			else
+							    			{
+							    				compilacion = compilar(codigosAlumnos.get(i).getRutaCodigo()+"/main.c");
+							    			}
+					    					break;
+					    				case "C++":
+					    					//Se trata de compilar el archivo "main.cpp" y su salida se guarda en "compilacion".
+							    			if (System.getProperty("os.name").startsWith("Windows"))
+								    		{
+							    				compilacion = compilar(codigosAlumnos.get(i).getRutaCodigo()+"\\main.cpp");
+								    		}
+							    			else
+							    			{
+							    				compilacion = compilar(codigosAlumnos.get(i).getRutaCodigo()+"/main.cpp");
+							    			}
+					    					break;
+					    				default:
+					    					compilacion = null;
 					    			}
+					    			
 							    	
 							    	//Si en la compilación se registra un error en la compilación
 								    if(compilacion.contains("Error en la compilación"))
@@ -755,7 +874,7 @@ class VentanaPrin extends Frame
 					    		else
 					    		{
 					    			codigosAlumnos.get(i).setCalificacion(CALIFICACION_MINIMA);
-					    			codigosAlumnos.get(i).setFaltas(codigosAlumnos.get(i).getFaltas()+"Formato de entrega de evaluandos 3 (No se encontró \"main.c\").\n");
+					    			codigosAlumnos.get(i).setFaltas(codigosAlumnos.get(i).getFaltas()+"Formato de entrega de evaluandos 3 (No se encontró \"main." + lenguajeSolicitado +"\").\n");
 					    		}
 					    	}
 					    	
@@ -795,6 +914,11 @@ class VentanaPrin extends Frame
 					    			codigosAlumnos.get(i).getCalificacion()+"\t|\t"+codigosAlumnos.get(i).getFaltas());
 					    }
 					}
+					
+					checkBoxC.setSelected(false);
+					checkBoxCPP.setSelected(false);	
+					
+					lenguajeSolicitado = "";
 					break;
 			}
 		}
