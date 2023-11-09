@@ -135,9 +135,9 @@ En esta prueba no hay entradas pero si se espera una salida numérica cualquiera
 
 ## Demostración
 
-Se ingresa a **CodeHunter** la ruta de la carpeta con todos los archivos zip de los alumnos. Al presionar el botón "Seleccionar carpeta" se extraerán todos los archivos zip y se buscará la carpeta "C" en el interior de cada carpeta de alumno. En este caso la ruta a examinar será "/home/ash/Documentos/CUCEI/ServicioSocial/PruebasJuez/Version1.0/J3"
+Se ingresa a **CodeHunter** la ruta de la carpeta con todos los archivos zip de los alumnos, también hay que seleccionar el lenguaje con el que se programó la actividad, ya que esto le servirá al evaluador para saber que carpeta buscar y que compilador usar. Al presionar el botón "Seleccionar carpeta" se extraerán todos los archivos zip y en este caso al seleccionar el lenguaje C, se buscará la carpeta "C" en el interior de cada carpeta de alumno. En este caso la ruta a examinar será "/home/ash/Documentos/CUCEI/ServicioSocial/PruebasJuez/Version1.0/J3"
 
-![Ingreso de la ruta con los archivos ".zip"](https://github.com/Pollux02/CodeHunter/assets/62532201/52ec8fa5-1186-445a-b5c7-a4f3eef44e9c) *Figura 2.1: Ingreso de la ruta con los archivos ".zip".*
+![Ingreso de la ruta con los archivos ".zip"](https://github.com/Pollux02/CodeHunter/assets/62532201/9a315097-f65a-4b3c-89ed-8f64416f1558) *Figura 2.1: Ingreso de la ruta con los archivos ".zip".*
 
 Al terminar el proceso de extracción, si verificamos la carperta ingresada en **CodeHunter** podremos ver que se extrajo cada ".zip" y se creó una carpeta para cada alumno.
 
@@ -145,7 +145,7 @@ Al terminar el proceso de extracción, si verificamos la carperta ingresada en *
 
 En este momento aparece el botón "Seleccionar archivo de pruebas".
 
-![Botón "Seleccionar archivo de pruebas"](https://github.com/Pollux02/CodeHunter/assets/62532201/e0a4a9b1-8756-49f7-8cef-5ec529fe433a) *Figura 2.3: Botón "Seleccionar archivo de pruebas".*
+![Botón "Seleccionar archivo de pruebas"](https://github.com/Pollux02/CodeHunter/assets/62532201/6378e9b7-379f-4182-9596-0b5a014b7b7b) *Figura 2.3: Botón "Seleccionar archivo de pruebas".*
 
 Al dar click en este botón se abrirá una ventana para seleccionar el ".txt" de prueba.
 
@@ -153,7 +153,7 @@ Al dar click en este botón se abrirá una ventana para seleccionar el ".txt" de
 
 Al elegir el archivo de pruebas **CodeHunter** comenzará con la evaluación automática y mostrará los resultados finales.
 
-![Resultados finales](https://github.com/Pollux02/CodeHunter/assets/62532201/8177f54b-b291-411a-b737-f26d48526042) *Figura 2.5: Resultados finales.*
+![Resultados finales](https://github.com/Pollux02/CodeHunter/assets/62532201/3cda0808-9d09-4dbf-8f66-163969d592ae) *Figura 2.5: Resultados finales.*
 
 Podemos ver que en la revisión de "TresCinco" podemos ver que se le asignó una calificación de 5/100 ya que no se encontró "main.c". Al revisar su carpeta "C", por algún error del alumno, se guardo el código fuente con el nombre "main.c.c".
 
