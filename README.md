@@ -205,8 +205,6 @@ Cómo se puede ver en las pruebas hay entradas, pero en el código de "CuatroCer
 
 ## Instalación
 
-Proporciona instrucciones claras y concisas sobre cómo instalar tu proyecto.
-
 - Linux (Ubuntu):
 
 Se descarga el ".deb" de la siguiente página https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.deb
