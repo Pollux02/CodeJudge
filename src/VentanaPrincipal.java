@@ -124,22 +124,29 @@ class VentanaPrin extends JFrame
 						seleccionarArchivoPruebas.setVisible(false);
 						tablaAlumnos.setText("Nickname\t|\tCalificación\t|\tFaltas");
 	
-						if(checkBoxC.isSelected())
+						if(checkBoxCPP.isSelected() && checkBoxC.isSelected())
 						{
-							lenguajeSolicitado = "C";
+							JOptionPane.showMessageDialog(null, "Se seleccionó más de un lenguaje", "Aviso", JOptionPane.WARNING_MESSAGE);
 						}
 						
-						if(checkBoxCPP.isSelected())
-						{
-							lenguajeSolicitado = "C++";
-						}
-						
-						if(lenguajeSolicitado == "")
+						else if(!checkBoxCPP.isSelected() && !checkBoxC.isSelected())
 						{
 							JOptionPane.showMessageDialog(null, "No se seleccionó ningún lenguaje", "Aviso", JOptionPane.WARNING_MESSAGE);
 						}
-						else
+						
+						else if(checkBoxC.isSelected())
 						{
+							lenguajeSolicitado = "C";
+							
+							obtenerCodigos(listaArchivos);
+							//Al terminar con todos los archivos, se hace visible el botón seleccionarArchivoPruebas.
+							seleccionarArchivoPruebas.setVisible(true);
+						}
+						
+						else if(checkBoxCPP.isSelected())
+						{
+							lenguajeSolicitado = "C++";
+							
 							obtenerCodigos(listaArchivos);
 							//Al terminar con todos los archivos, se hace visible el botón seleccionarArchivoPruebas.
 							seleccionarArchivoPruebas.setVisible(true);
@@ -161,6 +168,8 @@ class VentanaPrin extends JFrame
 					checkBoxCPP.setSelected(false);	
 					
 					lenguajeSolicitado = "";
+					
+					seleccionarArchivoPruebas.setVisible(false);
 					break;
 			}
 		}
@@ -328,6 +337,7 @@ class VentanaPrin extends JFrame
 	    	//Si el alumno tiene la carpeta "C"
 	    	if(codigosAlumnos.get(i).getRutaCodigo() != "")
 	    	{
+	    		//Se evaluará que lenguaje seleccionó el usuario.
 	    		switch(lenguajeSolicitado)
 	    		{
 	    			case "C":
