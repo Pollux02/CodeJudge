@@ -47,6 +47,8 @@ class VentanaPrin extends JFrame
 	public static final long serialVersionUID = 1;
 	private final int PIXELES_ANCHO = 720, PIXELES_ALTO = 480;
 	private final int CALIFICACION_MINIMA = 5, CALIFICACION_MAXIMA = 100, CALIFICACION_WARNINGS = 95;
+	private final String LENGUAJEC = "C", LENGUAJECPP = "C++";
+	
 	private JButton seleccionarCarpeta, seleccionarArchivoPruebas;
 	private JPanel panelButtons, panelCheckboxs;
 	private JTextField campoRutaCarpeta;
@@ -136,7 +138,7 @@ class VentanaPrin extends JFrame
 						
 						else if(checkBoxC.isSelected())
 						{
-							lenguajeSolicitado = "C";
+							lenguajeSolicitado = LENGUAJEC;
 							
 							obtenerCodigos(listaArchivos);
 							//Al terminar con todos los archivos, se hace visible el botón seleccionarArchivoPruebas.
@@ -145,7 +147,7 @@ class VentanaPrin extends JFrame
 						
 						else if(checkBoxCPP.isSelected())
 						{
-							lenguajeSolicitado = "C++";
+							lenguajeSolicitado = LENGUAJECPP;
 							
 							obtenerCodigos(listaArchivos);
 							//Al terminar con todos los archivos, se hace visible el botón seleccionarArchivoPruebas.
@@ -340,7 +342,7 @@ class VentanaPrin extends JFrame
 	    		//Se evaluará que lenguaje seleccionó el usuario.
 	    		switch(lenguajeSolicitado)
 	    		{
-	    			case "C":
+	    			case LENGUAJEC:
 			    		if (System.getProperty("os.name").startsWith("Windows"))
 			    		{
 			    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"\\main.c");
@@ -350,7 +352,7 @@ class VentanaPrin extends JFrame
 			    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"/main.c");
 			    		}
 	    				break;
-	    			case "C++":
+	    			case LENGUAJECPP:
 			    		if (System.getProperty("os.name").startsWith("Windows"))
 			    		{
 			    			archivoMain = new File(codigosAlumnos.get(i).getRutaCodigo()+"\\main.cpp");
@@ -369,7 +371,7 @@ class VentanaPrin extends JFrame
 	    		{
 	    			switch(lenguajeSolicitado)
 	    			{
-	    				case "C":
+	    				case LENGUAJEC:
 	    					//Se trata de compilar el archivo "main.c" y su salida se guarda en "compilacion".
 			    			if (System.getProperty("os.name").startsWith("Windows"))
 				    		{
@@ -380,7 +382,7 @@ class VentanaPrin extends JFrame
 			    				compilacion = compilar(codigosAlumnos.get(i).getRutaCodigo()+"/main.c");
 			    			}
 	    					break;
-	    				case "C++":
+	    				case LENGUAJECPP:
 	    					//Se trata de compilar el archivo "main.cpp" y su salida se guarda en "compilacion".
 			    			if (System.getProperty("os.name").startsWith("Windows"))
 				    		{
@@ -512,10 +514,10 @@ class VentanaPrin extends JFrame
 	    
 	    switch(lenguajeSolicitado)
 	    {
-	    	case "C":
+	    	case LENGUAJEC:
 	    		comandoCompilar = "gcc -Wall -Wextra -Wswitch-default -Wfloat-equal -Wunreachable-code " + rutaArchivo + " -o program -lm";
 	    		break;
-	    	case "C++":
+	    	case LENGUAJECPP:
 	    		comandoCompilar = "g++ -Wall -Wextra -Wswitch-default -Wfloat-equal -Wunreachable-code " + rutaArchivo + " -o program -lm";
 	    		break;	
 	    	default:
@@ -791,16 +793,9 @@ class VentanaPrin extends JFrame
 	
 	public static boolean esNumeroFlotante(String str) 
 	{
-	    try 
-	    {
-	        float numero = Float.parseFloat(str);
-	        return (numero % 1) != 0; // Comprueba si el número tiene parte decimal
-	    } 
-	    catch (NumberFormatException e) 
-	    {
-	        return false;
-	    }
-	}
+        String regex = "\\d+\\.\\d+";
+        return Pattern.matches(regex, str);
+    }
 	
 	//Función para la obtención de pruebas por medio de una lista de lineas.
 	private List<Prueba> obtenerPruebas(String[] lineas)
