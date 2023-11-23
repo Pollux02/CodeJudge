@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 
 
 
@@ -640,13 +641,16 @@ class VentanaPrin extends JFrame
 	
 	private boolean probarPrograma(List<Prueba> pruebas)
 	{
-		int i = 0, j = 0, z=0, indiceSalida = 0;
+		int i = 0, j = 0, z = 0, indiceSalida = 0;
 		
 		boolean encontrado;
 		
 		String salida = "";
 		
 		List<String> palabras = new ArrayList<>();
+		
+		DecimalFormat df = new DecimalFormat("#." + "0".repeat(2));
+		double valorRedondeado;
 		
 		Pattern pattern;
         Matcher matcher;
@@ -761,6 +765,10 @@ class VentanaPrin extends JFrame
 						
 						if(esNumeroFlotante(pruebas.get(i).getSalidas().get(j)) && esNumeroFlotante(palabras.get(z)))
 						{
+							
+							valorRedondeado = Double.parseDouble(df.format(Float.parseFloat(palabras.get(z))));
+							
+							palabras.set(z, Double.toString(valorRedondeado));
 							if (palabras.get(z).contains(pruebas.get(i).getSalidas().get(j))) 
 							{
 								palabras.remove(z);
