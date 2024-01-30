@@ -37,9 +37,9 @@ public class VentanaPrincipal
 {
 	public static void main(String[] args) 
 	{		
-		VentanaPrin evaluacionCodigo = new VentanaPrin();
-		evaluacionCodigo.setLocationRelativeTo(null);
-		evaluacionCodigo.setVisible(true);
+		VentanaPrin ventanaPrin = new VentanaPrin();
+		ventanaPrin.setLocationRelativeTo(null);
+		ventanaPrin.setVisible(true);
 	}
 }
 
@@ -50,7 +50,7 @@ class VentanaPrin extends JFrame
 	private final int CALIFICACION_MINIMA = 5, CALIFICACION_MAXIMA = 100, CALIFICACION_WARNINGS = 95;
 	private final String LENGUAJEC = "C", LENGUAJECPP = "C++";
 	
-	private JButton seleccionarCarpeta, seleccionarArchivoPruebas;
+	private JButton seleccionarCarpeta, seleccionarArchivoPruebas, crearArchivoPruebas;
 	private JPanel panelButtons, panelCheckboxs;
 	private JTextField campoRutaCarpeta;
 	private JTextArea tablaAlumnos;
@@ -64,11 +64,12 @@ class VentanaPrin extends JFrame
 		super("CodeHunter");
 		ManejadorVentana mv = new ManejadorVentana();
 		
-		panelButtons = new JPanel(new GridLayout(7,1));
-		panelCheckboxs = new JPanel(new GridLayout(1,2));
+		panelButtons = new JPanel(new GridLayout(9,1));
+		panelCheckboxs = new JPanel(new GridLayout(1,3));
 		
 		seleccionarCarpeta = new JButton("Seleccionar carpeta");
 		seleccionarArchivoPruebas = new JButton("Seleccionar archivo de pruebas");
+		crearArchivoPruebas = new JButton("Crear archivo de pruebas");
 		
 		campoRutaCarpeta = new JTextField();
 		
@@ -87,10 +88,12 @@ class VentanaPrin extends JFrame
 		panelButtons.add(new JLabel(""));
 		panelButtons.add(seleccionarArchivoPruebas);
 		panelButtons.add(new JLabel(""));
+		panelButtons.add(crearArchivoPruebas);
+		panelButtons.add(new JLabel(""));
 
 		panelCheckboxs.add(checkBoxC);
 		panelCheckboxs.add(checkBoxCPP);
-		
+			
 		//Frame
 		add("North",panelButtons);
 		add("Center", panelCheckboxs);
@@ -100,6 +103,7 @@ class VentanaPrin extends JFrame
 		addWindowListener(mv);
 		seleccionarCarpeta.addActionListener(new ManejadorBotones());
 		seleccionarArchivoPruebas.addActionListener(new ManejadorBotones());
+		crearArchivoPruebas.addActionListener(new ManejadorBotones());
 		seleccionarArchivoPruebas.setVisible(false);
 	}
 	
@@ -173,6 +177,10 @@ class VentanaPrin extends JFrame
 					lenguajeSolicitado = "";
 					
 					seleccionarArchivoPruebas.setVisible(false);
+					break;
+					
+				case "Crear archivo de pruebas":
+					VentanaCrearArchivoPruebas.abrirVentanaCrearArchivo();
 					break;
 			}
 		}
