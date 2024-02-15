@@ -1,6 +1,8 @@
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
@@ -12,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -41,10 +45,11 @@ class VentanaCrearArchivo extends JFrame
 	public static final long serialVersionUID = 1;
 	private final int PIXELES_ANCHO = 720, PIXELES_ALTO = 480;
 	
-	private JButton cargarArchivoPruebas, nuevoArchivoPruebas, guardarArchivoPruebas, nuevaPrueba;
-	private JTextField campoEntradas, campoSalidas;
+	private JButton cargarArchivoPruebas, nuevoArchivoPruebas, guardarArchivoPruebas, nuevaPrueba, eliminarPrueba;
+	private JTextField campoEntradas, campoSalidas, campoIdPruebaEliminar;
 	private JPanel panelEntradasSalidas, panelButtons;
 	private JTextArea tablaEntradas, tablaSalidas;
+	private JCheckBox checkBoxBuscaOrden;
 	
 	private Prueba pruebaActual = null;
 	
@@ -56,23 +61,30 @@ class VentanaCrearArchivo extends JFrame
 		ManejadorVentana mv = new ManejadorVentana();
 		
 		panelEntradasSalidas = new JPanel(new GridLayout(1,3));
-		panelButtons = new JPanel(new GridLayout(4,3));
+		panelButtons = new JPanel(new GridLayout(9,3));
 		
 		cargarArchivoPruebas = new JButton("Cargar archivo de pruebas");
 		nuevoArchivoPruebas = new JButton("Nuevo archivo de pruebas");
 		guardarArchivoPruebas = new JButton("Guardar archivo de pruebas");
 		nuevaPrueba = new JButton("Nueva prueba");
+		eliminarPrueba = new JButton("Eliminar prueba");
 		
 		campoEntradas = new JTextField();
 		campoSalidas = new JTextField();
+		campoIdPruebaEliminar = new JTextField();
 		
 		tablaEntradas = new JTextArea("Num Prueba\t|\tEntrada");
 		tablaSalidas = new JTextArea("Num Prueba\t|\tSalida");
+		
+		checkBoxBuscaOrden = new JCheckBox("Busca Orden");
 		
 		panelEntradasSalidas.add(tablaEntradas);
 		panelEntradasSalidas.add(new JLabel(""));
 		panelEntradasSalidas.add(tablaSalidas);
 		
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(checkBoxBuscaOrden);
+		panelButtons.add(new JLabel(""));
 		panelButtons.add(new JLabel("Entradas:"));
 		panelButtons.add(new JLabel(""));
 		panelButtons.add(new JLabel("Salidas:"));
@@ -80,7 +92,19 @@ class VentanaCrearArchivo extends JFrame
 		panelButtons.add(new JLabel(""));
 		panelButtons.add(campoSalidas);
 		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
 		panelButtons.add(nuevaPrueba);
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel("Introduzca el id de la prueba a eliminar: "));
+		panelButtons.add(campoIdPruebaEliminar);
+		panelButtons.add(eliminarPrueba);
+		panelButtons.add(new JLabel(""));
+		panelButtons.add(new JLabel(""));
 		panelButtons.add(new JLabel(""));
 		panelButtons.add(guardarArchivoPruebas);
 		panelButtons.add(cargarArchivoPruebas);
@@ -94,6 +118,7 @@ class VentanaCrearArchivo extends JFrame
 		guardarArchivoPruebas.addActionListener(new ManejadorBotones());
 		nuevoArchivoPruebas.addActionListener(new ManejadorBotones());
 		nuevaPrueba.addActionListener(new ManejadorBotones());
+		eliminarPrueba.addActionListener(new ManejadorBotones());
 		
 		campoEntradas.addActionListener(new ActionListener() {
             @Override
@@ -102,6 +127,8 @@ class VentanaCrearArchivo extends JFrame
                 String textoIngresadoEntradas = campoEntradas.getText();
 
                 String[] lineas = textoIngresadoEntradas.split("\\*");
+                
+                checkBoxBuscaOrden.setEnabled(false);
                 
                 
                 if(pruebaActual == null)
@@ -128,6 +155,8 @@ class VentanaCrearArchivo extends JFrame
 
                 String[] lineas = textoIngresadoSalidas.split("\\*");
                 
+                checkBoxBuscaOrden.setEnabled(false);
+                
                 
                 if(pruebaActual == null)
                 {
@@ -145,6 +174,29 @@ class VentanaCrearArchivo extends JFrame
             }
         });
 		
+		checkBoxBuscaOrden.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                	pruebaActual = new Prueba(pruebasActuales.size());
+                	pruebaActual.setBuscaOrden(true);
+                	tablaSalidas.setText(tablaSalidas.getText()+"\n"+pruebaActual.getId()+"\t|\t-Busca Orden-");
+                } 
+                else if (e.getStateChange() == ItemEvent.DESELECTED) {
+                	if(pruebaActual != null) {
+                		pruebaActual = null;
+                    	
+                    	String textoTablaSalidas =  tablaSalidas.getText();
+                    	
+                    	int ultimaLinea = textoTablaSalidas.lastIndexOf('\n');
+                    	
+                    	if(ultimaLinea != -1) {
+                    		tablaSalidas.setText(textoTablaSalidas.substring(0, ultimaLinea));
+                    	}
+                	}
+                }
+            }
+        });
 	}
 	
 	private class ManejadorBotones implements ActionListener
@@ -164,6 +216,10 @@ class VentanaCrearArchivo extends JFrame
 				    
 				    for(Prueba prueba : pruebasActuales)
 				    {
+				    	if(prueba.getBuscaOrden()) {
+							tablaSalidas.setText(tablaSalidas.getText()+"\n"+pruebaActual.getId()+"\t|\t-Busca Orden-");
+						}
+				    	
 				    	for(String entrada:prueba.getEntradas())
 				    	{
 				    		tablaEntradas.setText(tablaEntradas.getText()+"\n"+prueba.getId()+"\t|\t"+entrada);
@@ -176,22 +232,95 @@ class VentanaCrearArchivo extends JFrame
 				    }
 				    break;
 				    
-				case "Nueva prueba":			
+				case "Nueva prueba":		
 					pruebasActuales.add(pruebaActual);
 					pruebaActual = null;
+					checkBoxBuscaOrden.setEnabled(true);
+					checkBoxBuscaOrden.setSelected(false);
 					break;
 					
 				case "Nuevo archivo de pruebas":			
-					pruebaActual = null;
 					pruebasActuales = new ArrayList<>();
+					pruebaActual = null;
+					checkBoxBuscaOrden.setEnabled(true);
+					checkBoxBuscaOrden.setSelected(false);
+					
 					campoEntradas.setText("");
 					campoEntradas.setText("");
 					tablaEntradas.setText("Num Prueba\t|\tEntrada");
 					tablaSalidas.setText("Num Prueba\t|\tSalida");
 					break;
 					
+				case "Eliminar prueba":	
+					
+					if(campoIdPruebaEliminar.getText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Ingrese un id válido.", "Aviso", JOptionPane.WARNING_MESSAGE);
+					}
+					else {
+						int idEliminar = Integer.parseInt(campoIdPruebaEliminar.getText());	
+						
+						if(idEliminar < pruebasActuales.size()-1) {
+							pruebasActuales.remove(idEliminar);
+							
+							campoEntradas.setText("");
+							campoEntradas.setText("");
+							tablaEntradas.setText("Num Prueba\t|\tEntrada");
+							tablaSalidas.setText("Num Prueba\t|\tSalida");
+							
+							for(Prueba prueba : pruebasActuales)
+						    {
+								if(prueba.getId()>idEliminar) {
+									pruebasActuales.get(prueba.getId()-1).setId(prueba.getId()-1);
+								}
+								
+								if(prueba.getBuscaOrden()) {
+									tablaSalidas.setText(tablaSalidas.getText()+"\n"+pruebaActual.getId()+"\t|\t-Busca Orden-");
+								}
+								
+						    	for(String entrada:prueba.getEntradas())
+						    	{
+						    		tablaEntradas.setText(tablaEntradas.getText()+"\n"+prueba.getId()+"\t|\t"+entrada);
+						    	}
+						    	
+						    	for(String salida:prueba.getSalidas())
+						    	{
+						    		tablaSalidas.setText(tablaSalidas.getText()+"\n"+prueba.getId()+"\t|\t"+salida);
+						    	}
+						    }
+						}
+						else {
+							pruebaActual = null;
+							checkBoxBuscaOrden.setEnabled(true);
+							checkBoxBuscaOrden.setSelected(false);
+							
+							for(Prueba prueba : pruebasActuales)
+						    {	
+								if(prueba.getBuscaOrden()) {
+									tablaSalidas.setText(tablaSalidas.getText()+"\n"+pruebaActual.getId()+"\t|\t-Busca Orden-");
+								}
+								
+						    	for(String entrada:prueba.getEntradas())
+						    	{
+						    		tablaEntradas.setText(tablaEntradas.getText()+"\n"+prueba.getId()+"\t|\t"+entrada);
+						    	}
+						    	
+						    	for(String salida:prueba.getSalidas())
+						    	{
+						    		tablaSalidas.setText(tablaSalidas.getText()+"\n"+prueba.getId()+"\t|\t"+salida);
+						    	}
+						    }
+						}
+					}
+					
+					break;
+					
 				case "Guardar archivo de pruebas":	
 					pruebasActuales.add(pruebaActual);
+					
+					pruebaActual = null;
+					checkBoxBuscaOrden.setEnabled(true);
+					checkBoxBuscaOrden.setSelected(false);
+					
 					String contenido = "";
 					
 					for(Prueba prueba : pruebasActuales)
@@ -201,8 +330,13 @@ class VentanaCrearArchivo extends JFrame
 							contenido = contenido+entrada+"\n";
 						}
 						
-						contenido = contenido+"="+"\n";
-						
+						if(prueba.getBuscaOrden() == true) {
+							contenido = contenido+"=O\n";
+						}
+						else {
+							contenido = contenido+"=\n";
+						}
+
 						for(String salida : prueba.getSalidas())
 						{
 							contenido = contenido+salida+"\n";
